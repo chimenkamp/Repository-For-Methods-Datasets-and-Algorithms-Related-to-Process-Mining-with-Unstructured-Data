@@ -1,0 +1,129 @@
+/* ============================================
+   Design Tokens - Human-Crafted Nord System
+   ============================================ */
+
+:root {
+  /* ----------------------------------------
+     Nord Palette (raw)
+     ---------------------------------------- */
+  --nord0: #2e3440;
+  --nord1: #3b4252;
+  --nord2: #434c5e;
+  --nord3: #4c566a;
+  --nord4: #d8dee9;
+  --nord5: #e5e9f0;
+  --nord6: #eceff4;
+  --nord7: #8fbcbb;
+  --nord8: #88c0d0;
+  --nord9: #81a1c1;
+  --nord10: #5e81ac;
+  --nord11: #bf616a;
+  --nord12: #d08770;
+  --nord13: #ebcb8b;
+  --nord14: #a3be8c;
+  --nord15: #b48ead;
+
+  /* ----------------------------------------
+     Semantic Surface Tokens
+     Deep backgrounds, minimal layering
+     ---------------------------------------- */
+  --bg: var(--nord0);
+  --bg-subtle: #323845;
+  --surface: var(--nord1);
+  --surface-raised: var(--nord2);
+  --surface-overlay: var(--nord3);
+
+  /* ----------------------------------------
+     Text Tokens - Clear hierarchy
+     ---------------------------------------- */
+  --text: var(--nord6);
+  --text-secondary: var(--nord4);
+  --text-muted: #9aa5b8;
+  --text-faint: var(--nord3);
+
+  /* ----------------------------------------
+     Border & Divider Tokens
+     Subtle, not heavy
+     ---------------------------------------- */
+  --border: rgba(76, 86, 106, 0.5);
+  --border-subtle: rgba(76, 86, 106, 0.25);
+  --divider: rgba(76, 86, 106, 0.3);
+
+  /* ----------------------------------------
+     Primary Accent: Nord8 (Frost Blue)
+     Use sparingly, one accent at a time
+     ---------------------------------------- */
+  --accent: var(--nord8);
+  --accent-muted: rgba(136, 192, 208, 0.15);
+  --accent-hover: var(--nord7);
+  --accent-text: var(--nord8);
+
+  /* ----------------------------------------
+     Secondary Colors (use very sparingly)
+     ---------------------------------------- */
+  --color-success: var(--nord14);
+  --color-warning: var(--nord13);
+  --color-error: var(--nord11);
+
+  /* ----------------------------------------
+     Pipeline Step Colors
+     Unified muted tones, accent for selected
+     ---------------------------------------- */
+  --step-default: var(--nord3);
+  --step-active: var(--accent);
+
+  /* ----------------------------------------
+     Modality Colors (subtle)
+     ---------------------------------------- */
+  --mod-text: rgba(136, 192, 208, 0.9);
+  --mod-image: rgba(163, 190, 140, 0.9);
+  --mod-video: rgba(180, 142, 173, 0.9);
+  --mod-audio: rgba(208, 135, 112, 0.9);
+  --mod-sensor: rgba(235, 203, 139, 0.9);
+  --mod-realtime: rgba(191, 97, 106, 0.9);
+  --mod-mixed: rgba(143, 188, 187, 0.9);
+
+  /* ----------------------------------------
+     Spacing Scale (8px base)
+     ---------------------------------------- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+  --sp-20: 80px;
+
+  /* ----------------------------------------
+     Radii - Restrained, not bubbly
+     ---------------------------------------- */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-pill: 100px;
+
+  /* ----------------------------------------
+     Shadows - Minimal, consistent
+     ---------------------------------------- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-focus: 0 0 0 2px var(--accent-muted);
+
+  /* ----------------------------------------
+     Transitions
+     ---------------------------------------- */
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  --duration-fast: 120ms;
+  --duration-normal: 200ms;
+
+  /* ----------------------------------------
+     Layout
+     ---------------------------------------- */
+  --header-height: 52px;
+  --content-max: 1200px;
+  --sidebar-width: 280px;
+}
