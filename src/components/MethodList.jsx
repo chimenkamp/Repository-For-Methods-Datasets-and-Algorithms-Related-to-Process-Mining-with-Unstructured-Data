@@ -123,8 +123,33 @@ function MethodItem({ method }) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
+            title="Open paper"
           >
-            Paper
+            📄
+          </a>
+        )}
+        {method.artifacts?.code_url && (
+          <a
+            className="btn btn--ghost btn--sm"
+            href={method.artifacts.code_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            title="Open code repository"
+          >
+            💻
+          </a>
+        )}
+        {method.artifacts?.dataset_url && (
+          <a
+            className="btn btn--ghost btn--sm"
+            href={method.artifacts.dataset_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            title="Open dataset"
+          >
+            📊
           </a>
         )}
         <button 
@@ -133,8 +158,9 @@ function MethodItem({ method }) {
             e.stopPropagation();
             navigate(`/methods/${method.id}`);
           }}
+          title="View details"
         >
-          View
+          →
         </button>
       </div>
     </article>

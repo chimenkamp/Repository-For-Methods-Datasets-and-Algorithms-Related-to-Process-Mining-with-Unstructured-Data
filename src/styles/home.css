@@ -426,12 +426,7 @@
   display: flex;
   align-items: center;
   gap: var(--sp-1);
-  opacity: 0;
-  transition: opacity var(--duration-fast);
-}
-
-.method-item:hover .method-item__actions {
-  opacity: 1;
+  flex-shrink: 0;
 }
 
 .method-item__checkbox {
