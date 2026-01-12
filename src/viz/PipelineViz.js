@@ -5,6 +5,9 @@ import * as d3 from 'd3';
  * Large cards with image centered, name at top, info at bottom
  */
 
+// Base path for assets (matches Vite config)
+const BASE_PATH = import.meta.env.BASE_URL || '/';
+
 // Nord Aurora colors for card borders
 const AURORA_COLORS = {
   collect: '#bf616a',           // Aurora 1 - Red
@@ -36,15 +39,15 @@ const MODALITY_COLORS = {
   mixed: '#8fbcbb',
 };
 
-// Step image mapping
-const STEP_IMAGES = {
-  collect: '/Picture 1.png',
-  preprocess: '/Picture 2.png',
-  abstract_aggregate: '/Picture 3.png',
-  correlate_cases: '/Picture 4.png',
-  enhance_visualization: '/Picture 5.png',
-  apply_mining: '/Picture 6.png',
-};
+// Step image mapping (using BASE_PATH for deployment)
+const getStepImage = (step) => `${BASE_PATH}Picture ${{
+  collect: '1',
+  preprocess: '2',
+  abstract_aggregate: '3',
+  correlate_cases: '4',
+  enhance_visualization: '5',
+  apply_mining: '6',
+}[step]}.png`;
 
 // Design tokens (matching CSS)
 const TOKENS = {
@@ -198,7 +201,7 @@ export function createPipelineVisualization(container, data, options = {}) {
     .attr('y', (innerHeight - cardHeight) / 2 - 10)
     .attr('width', dataSourceAreaWidth - 20)
     .attr('height', cardHeight + 20)
-    .attr('href', '/Picture 1.png')
+    .attr('href', `${BASE_PATH}Picture 1.png`)
     .attr('preserveAspectRatio', 'xMidYMid meet')
     .attr('opacity', 0.15)
     .style('pointer-events', 'none');
@@ -431,7 +434,7 @@ export function createPipelineVisualization(container, data, options = {}) {
     .attr('y', (cardHeight - imageSize) / 2 - 4)
     .attr('width', imageSize)
     .attr('height', imageSize)
-    .attr('href', (d) => STEP_IMAGES[d.id])
+    .attr('href', (d) => getStepImage(d.id))
     .attr('preserveAspectRatio', 'xMidYMid meet')
     .style('pointer-events', 'none');
 

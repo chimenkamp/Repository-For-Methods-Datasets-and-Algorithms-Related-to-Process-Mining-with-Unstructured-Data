@@ -4,6 +4,9 @@ import Fuse from 'fuse.js';
  * Data loading utilities
  */
 
+// Base path for assets (matches Vite config)
+const BASE_PATH = import.meta.env.BASE_URL || '/';
+
 let cachedData = null;
 
 /**
@@ -14,7 +17,7 @@ export async function loadMethodsData() {
   if (cachedData) return cachedData;
 
   try {
-    const response = await fetch('./data/methods.json');
+    const response = await fetch(`${BASE_PATH}data/methods.json`);
     if (!response.ok) {
       throw new Error(`Failed to load methods data: ${response.status}`);
     }
