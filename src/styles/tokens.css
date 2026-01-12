@@ -28,7 +28,7 @@
      Deep backgrounds, minimal layering
      ---------------------------------------- */
   --bg: var(--nord0);
-  --bg-subtle: #323845;
+  --bg-subtle: #556078;
   --surface: var(--nord1);
   --surface-raised: var(--nord2);
   --surface-overlay: var(--nord3);

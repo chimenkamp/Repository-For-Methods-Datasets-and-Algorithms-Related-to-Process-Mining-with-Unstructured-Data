@@ -63,7 +63,7 @@ export default function PipelineVisualization() {
 
       // Create new visualization
       vizRef.current = createPipelineVisualization(container, vizData, {
-        height: 280,
+        height: 320,
         selectedStep: selectedStepRef.current,
         selectedModality: selectedModalityRef.current,
         animated: true,
@@ -107,7 +107,7 @@ export default function PipelineVisualization() {
 
           vizRef.current.destroy();
           vizRef.current = createPipelineVisualization(containerRef.current, vizData, {
-            height: 280,
+            height: 320,
             selectedStep: selectedStepRef.current,
             selectedModality: selectedModalityRef.current,
             animated: false,

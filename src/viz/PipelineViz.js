@@ -64,6 +64,9 @@ const TOKENS = {
   accentMuted: 'rgba(136, 192, 208, 0.15)',
 };
 
+// Arrow/connection styling
+const ARROW_WIDTH = 2;
+
 // Data sources for the collect step (real world)
 const DATA_SOURCES = [
   { id: 'text', name: 'Text', color: MODALITY_COLORS.text },
@@ -90,7 +93,7 @@ export function createPipelineVisualization(container, data, options = {}) {
 
   const {
     width = containerWidth,
-    height = options.height || 280,
+    height = options.height || 340,
     onStepClick = () => {},
     onDataSourceClick = () => {},
     onStepHover = () => {},
@@ -144,13 +147,13 @@ export function createPipelineVisualization(container, data, options = {}) {
   const stepCount = pipelineStepsWithoutCollect.length;
   const gap = 16;
   
-  // Reserve space for data source circles on the left
-  const dataSourceAreaWidth = 180;
-  const availableWidth = innerWidth - dataSourceAreaWidth;
+  // Reserve space for data source card on the left (wider to fit circles + title)
+  const dataSourceCardWidth = 200;
+  const availableWidth = innerWidth - dataSourceCardWidth - gap;
   const cardWidth = Math.min(150, (availableWidth - (stepCount - 1) * gap - (stepCount - 1) * 20) / stepCount);
   const cardHeight = innerHeight - 8;
-  const imageSize = 120;
-  const startX = dataSourceAreaWidth;
+  const imageSize = 110;
+  const startX = dataSourceCardWidth + gap;
 
   // Count methods per step
   const methodCounts = {};
@@ -159,12 +162,14 @@ export function createPipelineVisualization(container, data, options = {}) {
   });
 
   // Create data source circles (first step - real world)
-  const circleRadius = 28;
-  const dataSourceStartY = (innerHeight - cardHeight) / 2 + 20;
-  const baseX = dataSourceAreaWidth / 2 - 20;
+  const circleRadius = 22;
+  const collectCardY = (innerHeight - cardHeight) / 2;
+  const dataSourceStartY = 55; // Start below title
+  const baseX = dataSourceCardWidth / 2;
   
   // Count methods per modality in the collect step
   const collectMethods = data.methods.filter(m => m.pipeline_step === 'collect');
+  const totalCollectCount = collectMethods.length;
   const modalityCounts = {};
   DATA_SOURCES.forEach(source => {
     modalityCounts[source.id] = collectMethods.filter(m => 
@@ -172,18 +177,17 @@ export function createPipelineVisualization(container, data, options = {}) {
     ).length;
   });
   
-  // Predefined positions with some randomness but no overlap
-  // Arranged in a scattered pattern within the data source area
+  // Scattered positions with organic variation (no rigid grid)
   const dataSourcePositions = [
-    { xOffset: -35, yOffset: 0 },      // Text - top left
-    { xOffset: 25, yOffset: 30 },      // Image - right, slightly down
-    { xOffset: -20, yOffset: 65 },     // Video - left middle
-    { xOffset: 35, yOffset: 100 },     // Audio - right lower
-    { xOffset: -30, yOffset: 135 },    // Sensor - left lower
-    { xOffset: 20, yOffset: 170 },     // Real-Time - right bottom
+    { xOffset: -38, yOffset: 12 },     // Text - top left (shifted down to avoid title)
+    { xOffset: 30, yOffset: 28 },      // Image - top right, slightly down
+    { xOffset: -25, yOffset: 68 },     // Video - left middle
+    { xOffset: 35, yOffset: 88 },      // Audio - right, lower
+    { xOffset: -32, yOffset: 130 },    // Sensor - left lower
+    { xOffset: 25, yOffset: 155 },     // Real-Time - right bottom
   ];
 
-  // Create data source nodes with scattered positions and method counts
+  // Create data source nodes with grid positions and method counts
   const dataSourceNodes = DATA_SOURCES.map((source, i) => ({
     ...source,
     x: baseX + dataSourcePositions[i].xOffset,
@@ -191,20 +195,112 @@ export function createPipelineVisualization(container, data, options = {}) {
     methodCount: modalityCounts[source.id],
   }));
 
-  // Background image container for data sources
-  const bgGroup = g.append('g').attr('class', 'data-source-bg');
-  
-  // Add background image with opacity
-  bgGroup
+  // === COLLECT CARD WRAPPER ===
+  const collectCardGroup = g.append('g')
+    .attr('class', 'collect-card')
+    .attr('transform', `translate(0,${collectCardY})`)
+    .style('cursor', 'pointer');
+
+  // Card background (same style as other pipeline cards)
+  const collectCardBg = collectCardGroup
+    .append('rect')
+    .attr('class', 'collect-card-bg')
+    .attr('width', dataSourceCardWidth)
+    .attr('height', cardHeight)
+    .attr('rx', 10)
+    .attr('ry', 10)
+    .attr('fill', TOKENS.cardBg)
+    .attr('stroke', selectedStep === 'collect' && !selectedModality ? AURORA_COLORS.collect : TOKENS.border)
+    .attr('stroke-width', selectedStep === 'collect' && !selectedModality ? 2.5 : 1.5);
+
+  // Background image with opacity (inside the card)
+  collectCardGroup
     .append('image')
-    .attr('x', 0)
-    .attr('y', (innerHeight - cardHeight) / 2 - 10)
-    .attr('width', dataSourceAreaWidth - 20)
-    .attr('height', cardHeight + 20)
+    .attr('x', 10)
+    .attr('y', 35)
+    .attr('width', dataSourceCardWidth - 20)
+    .attr('height', cardHeight - 70)
     .attr('href', `${BASE_PATH}Picture 1.png`)
     .attr('preserveAspectRatio', 'xMidYMid meet')
-    .attr('opacity', 0.15)
+    .attr('opacity', 0.12)
     .style('pointer-events', 'none');
+
+  // Card title at top
+  collectCardGroup
+    .append('text')
+    .attr('x', dataSourceCardWidth / 2)
+    .attr('y', 22)
+    .attr('text-anchor', 'middle')
+    .attr('fill', TOKENS.text)
+    .attr('font-size', '15px')
+    .attr('font-weight', '600')
+    .text('Collect');
+
+  // Subtitle
+  collectCardGroup
+    .append('text')
+    .attr('x', dataSourceCardWidth / 2)
+    .attr('y', 38)
+    .attr('text-anchor', 'middle')
+    .attr('fill', TOKENS.textMuted)
+    .attr('font-size', '10px')
+    .text('Real-World Data');
+
+  // Total method count badge at bottom
+  const collectBadgeY = cardHeight - 28;
+  collectCardGroup
+    .append('rect')
+    .attr('class', 'collect-count-badge')
+    .attr('x', dataSourceCardWidth / 2 - 20)
+    .attr('y', collectBadgeY)
+    .attr('width', 40)
+    .attr('height', 20)
+    .attr('rx', 10)
+    .attr('fill', `${AURORA_COLORS.collect}22`);
+
+  collectCardGroup
+    .append('text')
+    .attr('class', 'collect-count-text')
+    .attr('x', dataSourceCardWidth / 2)
+    .attr('y', collectBadgeY + 14)
+    .attr('text-anchor', 'middle')
+    .attr('fill', AURORA_COLORS.collect)
+    .attr('font-size', '11px')
+    .attr('font-weight', '600')
+    .attr('font-feature-settings', '"tnum"')
+    .text(totalCollectCount);
+
+  // Card click handler (for whole card, shows all collect methods)
+  collectCardGroup
+    .on('click', function (event) {
+      // Only trigger if clicking the card background, not a data source circle
+      if (event.target.classList.contains('collect-card-bg') || 
+          event.target.tagName === 'image' ||
+          event.target.classList.contains('collect-count-badge')) {
+        event.stopPropagation();
+        onStepClick('collect');
+      }
+    })
+    .on('mouseenter', function () {
+      if (currentSelectedStep !== 'collect' || currentSelectedModality) {
+        collectCardBg
+          .transition()
+          .duration(150)
+          .attr('stroke', AURORA_COLORS.collect)
+          .attr('stroke-width', 2);
+      }
+      onStepHover('collect');
+    })
+    .on('mouseleave', function () {
+      if (currentSelectedStep !== 'collect' || currentSelectedModality) {
+        collectCardBg
+          .transition()
+          .duration(150)
+          .attr('stroke', TOKENS.border)
+          .attr('stroke-width', 1.5);
+      }
+      onStepHover(null);
+    });
 
   // Create node positions for pipeline cards (excluding collect)
   const nodes = pipelineStepsWithoutCollect.map((step, i) => ({
@@ -217,8 +313,8 @@ export function createPipelineVisualization(container, data, options = {}) {
     auroraColor: AURORA_COLORS[step.id],
   }));
 
-  // Draw data source circles
-  const dataSourceGroups = g
+  // Draw data source circles inside the collect card
+  const dataSourceGroups = collectCardGroup
     .selectAll('.data-source')
     .data(dataSourceNodes)
     .enter()
@@ -295,7 +391,7 @@ export function createPipelineVisualization(container, data, options = {}) {
       onStepHover(null);
     });
 
-  // Draw curved connections from data sources to first pipeline card
+  // Draw curved connections from each data source to first pipeline card
   const firstCard = nodes[0];
   const targetX = firstCard.x - 4;
   const targetY = firstCard.y + cardHeight / 2;
@@ -307,16 +403,23 @@ export function createPipelineVisualization(container, data, options = {}) {
     return `M ${startX} ${startY} C ${startX + controlOffset} ${startY}, ${midX} ${endY}, ${endX} ${endY}`;
   };
   
+  // Data source nodes need absolute positions for connections
+  const dataSourceConnectionNodes = dataSourceNodes.map(d => ({
+    ...d,
+    absX: d.x + circleRadius + 4,
+    absY: collectCardY + d.y,
+  }));
+  
   const dataSourceConnections = g
     .selectAll('.ds-connection')
-    .data(dataSourceNodes)
+    .data(dataSourceConnectionNodes)
     .enter()
     .append('path')
     .attr('class', 'ds-connection')
-    .attr('d', (d) => createCurvedPath(d.x + circleRadius + 4, d.y, targetX, targetY))
+    .attr('d', (d) => createCurvedPath(d.absX, d.absY, targetX, targetY))
     .attr('fill', 'none')
     .attr('stroke', (d) => selectedModality === d.id ? d.color : TOKENS.textMuted)
-    .attr('stroke-width', (d) => selectedModality === d.id ? 2 : 1)
+    .attr('stroke-width', (d) => selectedModality === d.id ? ARROW_WIDTH * 2 : ARROW_WIDTH)
     .attr('stroke-dasharray', '4,3')
     .attr('marker-end', 'url(#arrow-card)')
     .attr('opacity', animated ? 0 : 0.6);
@@ -341,7 +444,7 @@ export function createPipelineVisualization(container, data, options = {}) {
     .attr('x2', (d, i) => nodes[i + 1].x - 4)
     .attr('y2', (d, i) => nodes[i + 1].y + cardHeight / 2)
     .attr('stroke', TOKENS.textMuted)
-    .attr('stroke-width', 1.5)
+    .attr('stroke-width', ARROW_WIDTH * 1.5)
     .attr('stroke-dasharray', '4,4')
     .attr('marker-end', 'url(#arrow-card)')
     .attr('opacity', animated ? 0 : 0.6);
@@ -505,8 +608,15 @@ export function createPipelineVisualization(container, data, options = {}) {
     currentSelectedStep = newSelected;
     currentSelectedModality = newModality;
 
-    // Update data source circles for modality/collect selection
+    // Update collect card border based on selection
     const isCollectSelected = newSelected === 'collect';
+    collectCardBg
+      .transition()
+      .duration(150)
+      .attr('stroke', isCollectSelected && !newModality ? AURORA_COLORS.collect : TOKENS.border)
+      .attr('stroke-width', isCollectSelected && !newModality ? 2.5 : 1.5);
+
+    // Update data source circles for modality/collect selection
     dataSourceGroups.each(function (d) {
       const isThisModalitySelected = newModality === d.id;
       const group = d3.select(this);
@@ -523,7 +633,7 @@ export function createPipelineVisualization(container, data, options = {}) {
       .transition()
       .duration(150)
       .attr('stroke', (d) => newModality === d.id ? d.color : TOKENS.textMuted)
-      .attr('stroke-width', (d) => newModality === d.id ? 2 : 1);
+      .attr('stroke-width', (d) => newModality === d.id ? ARROW_WIDTH * 2 : ARROW_WIDTH);
 
     nodeGroups.each(function (d) {
       const isSelected = newSelected === d.id;
